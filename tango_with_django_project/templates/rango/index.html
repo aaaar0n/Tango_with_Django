@@ -3,9 +3,10 @@
     <head>
         <title>Rango</title>
     </head>
-    <a href="/rango/add_category/">Add a New Category</a><br />
     <body>
-        <h1>Rango says..hello world!</h1>
+        <h1>Rango says.. Hello World!</h1>
+
+        <a href="/rango/add_category/">Add a New Category</a><br />
 
         {% if categories %}
             <ul>
@@ -21,6 +22,7 @@
         
             <ul>
         {% for page in page_list %}
+        <!-- Following line changed to add an HTML hyperlink -->
         <li><a href="{{ page.url }}">{{ page.title }}</a></li>
         {% endfor %}
 

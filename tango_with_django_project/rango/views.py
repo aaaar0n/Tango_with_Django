@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from rango.models import Category, Page
-from rango.forms import CategoryForm
+from rango.forms import PageForm
 
 import requests
 
@@ -10,7 +10,7 @@ def index(request):
     # context = RequestContext(request)
     # context_dict = {'boldmessage': "I am bold font from the context"}
     page_list = Page.objects.order_by('views')[:5]
-    category_list = Category.objects.order_by('-likes')[:3]
+    category_list = Category.objects.order_by('-likes')[:5]
     context_dict = {'categories': category_list, 'page_list': page_list}
     for category in category_list:
         category.url = category.name.replace(' ', '_')
@@ -41,6 +41,8 @@ def category(request, category_name_url):
 
     return render(request, 'rango/category.html', context_dict)
 
+from rango.forms import CategoryForm
+
 def add_category(request):
     # A HTTP POST?
     if request.method == 'POST':
@@ -64,3 +66,29 @@ def add_category(request):
     # Bad form (or form details), no form supplied...
     # Render the form with error messages (if any).
     return render(request, 'rango/add_category.html', {'form': form})
+
+def add_page(request, category_name_slug):
+
+    try:
+        cat = Category.objects.get(slug=category_name_slug)
+    except Category.DoesNotExist:
+                cat = None
+
+    if request.method == 'POST':
+        form = PageForm(request.POST)
+        if form.is_valid():
+            if cat:
+                page = form.save(commit=False)
+                page.category = cat
+                page.views = 0
+                page.save()
+                # probably better to use a redirect here.
+                return category(request, category_name_slug)
+        else:
+            print(form.errors)
+    else:
+        form = PageForm()
+
+    context_dict = {'form':form, 'category': cat}
+
+    return render(request, 'rango/add_page.html', context_dict)
