@@ -5,6 +5,7 @@ from rango.views import about
 from rango.views import category
 from rango.views import index
 from rango.views import test, add_category
+from rango.views import user_login
 
 
 urlpatterns = [
@@ -14,4 +15,6 @@ urlpatterns = [
     path('category/<str:category_name_url>/', category, name='category'),
     path('category/<str:category_name_slug>/', views.category, name='category'),
     path('add_category/', add_category, name='add_category'),
+    path('register/', views.register, name='register'),
+    path('login/', views.user_login, name='login'),
 ]
