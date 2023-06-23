@@ -1,14 +1,14 @@
+{% extends 'base.html' %}
+
 {% load static %}
 
-	<head>
-		<title>About page</title>
-	</head>
+{% block title %}{{ category_name }}{% endblock %}
 
-	<body>
+{% block body_block %}
+
 		{{ about }} <strong>{{ boldmessage }}</strong><br />
 		<img src="{% static "about.jpg" %}" alt="Picture of Rango Question Mark" />
 	</body>
 	<br>
 	<a href="/rango/">Index</a>
-    
-</html>
+{% endblock %}
