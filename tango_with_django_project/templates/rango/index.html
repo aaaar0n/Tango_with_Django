@@ -5,15 +5,11 @@
     </head>
     <body>
         {% if user.is_authenticated %}
-        <h1>Rango says... hello {{ user.username }}!</h1>
+        <h1>Rango says... Hello {{ user.username }}!</h1>
         {% else %}
-        <h1>Rango says... hello world!</h1>
+        <h1>Rango says... Hello world!</h1>
         {% endif %}
 
-        <a href="/rango/add_category/">Add a New Category</a><br />
-        <a href="/rango/register/">Register Here</a><br />
-        <a href="/rango/login/">Login</a>
-        
         {% if categories %}
             <ul>
                 {% for category in categories %}
@@ -22,16 +18,22 @@
                 {% endfor %}
         
             </ul>
-       {% else %}
+        {% else %}
             <strong>There are no categories present.</strong>
-       {% endif %}    
-        
+        {% endif %}    
             <ul>
         {% for page in page_list %}
         <!-- Following line changed to add an HTML hyperlink -->
         <li><a href="{{ page.url }}">{{ page.title }}</a></li>
         {% endfor %}
-
-
+            </ul>
+        {% if user.is_authenticated %}
+        <a href="/rango/logout/">Logout</a><br />
+        {% else %}
+        <a href="/rango/register/">Register Here</a><br />
+        <a href="/rango/login/">Login</a><br />
+        <a href="/rango/add_category/">Add a New Category</a><br />
+        {% endif %}
+        <a href="/rango/about/">About</a><br/>
     </body>
 </html>
