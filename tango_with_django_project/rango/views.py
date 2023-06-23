@@ -21,7 +21,7 @@ def index(request):
         category.url = category.name.replace(' ', '_')
     return render(request, 'rango/index.html', context_dict)
 
-
+@login_required
 def about(request):
     context = {
         'about': 'Rango says here is the about page.',
