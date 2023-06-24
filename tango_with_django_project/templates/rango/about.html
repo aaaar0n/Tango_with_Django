@@ -6,9 +6,12 @@
 
 {% block body_block %}
 
-		{{ about }} <strong>You have visited the site {{ visits }} time(s)</strong><br />
+	<strong>{{ about }}</strong> <br />
+	
+	<strong>You have visited the site {{ visits }} time(s)</strong><br />
 
-		<img src="{% static "about.jpg" %}" alt="Picture of Rango Question Mark" />
+		<img src="{% static 'about_new.jpg' %}" alt="Picture of chameleon" />
 	</body>
 	<br>
 {% endblock %}
+

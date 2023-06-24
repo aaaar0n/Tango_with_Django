@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from rango.forms import CategoryForm
 from datetime import datetime
 
-
+@login_required
 def index(request):
     request.session.set_test_cookie()
     # context = RequestContext(request)
@@ -48,7 +48,7 @@ def index(request):
 
     return response
 
-@login_required
+
 def about(request):
     
     if request.session.get('visits'):
@@ -56,7 +56,7 @@ def about(request):
     else:
         count = 0
     context = {
-        'about': 'Rango says here is the about page.',
+        'about': 'This is Rango about page.',
         'visits': count,
     }
     return render(request, 'rango/about.html', context)
