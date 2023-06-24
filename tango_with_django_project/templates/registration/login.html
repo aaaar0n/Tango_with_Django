@@ -13,11 +13,17 @@
             <form class="form-signin" role="form" method="post" action=".">
                 {% csrf_token %}
                 
+                
                 <h2 class="form-signin-heading">Please sign in</h2>
                 <input class="form-control" placeholder="Username" id="id_username" maxlength="254" name="username" type="text" required autofocus=""/>
                 <input type="password" class="form-control" placeholder="Password" id="id_password" name="password"  required />
                 
                         <button class="btn btn-lg btn-primary btn-block" type="submit" value="Submit" >Sign in</button>
+
+                        <div class="alert alert-danger" role="alert" id="error-alert" style="display: none;">
+                            Invalid username or password.
+                          </div>
+                          
                         </form>
                 
               <p>Not  a member? <a href="{% url 'registration_register' %}">Register</a>!</p>
@@ -27,7 +33,23 @@
       </div>
     </div>
   </div>
-  
+
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
+<script>
+  function validateLogin() {
+    // Perform login validation here
+    var username = document.getElementById("username").value;
+    var password = document.getElementById("password").value;
+
+    // Example validation (replace with your own logic)
+    if (username === "admin" && password === "password") {
+      // Successful login
+      // Redirect or perform necessary actions
+    } else {
+      // Invalid login
+      document.getElementById("error-alert").style.display = "block";
+    }
+  }
+</script>
 {% endblock %}
