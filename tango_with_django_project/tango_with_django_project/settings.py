@@ -63,6 +63,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'tango_with_django_project.urls'
 TEMPLATES_URL = os.path.join(BASE_DIR, 'templates')
+#TAGS_URL = os.path.join(BASE_DIR, 'templatetags')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -83,6 +84,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'tango_with_django_project.wsgi.application'
 
+BING_SEARCH_API_KEY = '7316f4d8edaa4a728618322ac038023c'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

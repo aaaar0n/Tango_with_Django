@@ -9,6 +9,31 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from rango.forms import CategoryForm
 from datetime import datetime
+from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect
+from .models import Category, Page
+from django.shortcuts import render
+from django.conf import settings
+import requests
+
+
+def search_view(request):
+    query = request.GET.get('query')
+    api_key = settings.BING_SEARCH_API_KEY
+    endpoint = "https://api.bing.microsoft.com/v7.0/search"
+    headers = {"Ocp-Apim-Subscription-Key": api_key}
+    params = {"q": query, "count": 10}  # Customize parameters as needed
+
+    response = requests.get(endpoint, headers=headers, params=params)
+    results = response.json().get('webPages', {}).get('value', [])
+
+    context = {
+        'query': query,
+        'results': results,
+    }
+    return render(request, 'rango/search_results.html', context)
+
+
 
 @login_required
 def index(request):
@@ -43,9 +68,7 @@ def index(request):
         request.session['visits'] = visits
     context_dict['visits'] = visits
 
-
     response = render(request,'rango/index.html', context_dict)
-
     return response
 
 
@@ -79,55 +102,16 @@ def category(request, category_name_url):
 
 @login_required
 def add_category(request):
-    # A HTTP POST?
     if request.method == 'POST':
         form = CategoryForm(request.POST)
-
-        # Have we been provided with a valid form?
         if form.is_valid():
-            # Save the new category to the database.
             form.save(commit=True)
-
-            # Now call the index() view.
-            # The user will be shown the homepage.
             return index(request)
         else:
-            # The supplied form contained errors - just print them to the terminal.
             print(form.errors)
     else:
-        # If the request was not a POST, display the form to enter details.
         form = CategoryForm()
-
-    # Bad form (or form details), no form supplied...
-    # Render the form with error messages (if any).
     return render(request, 'rango/add_category.html', {'form': form})
-
-@login_required
-def add_page(request, category_name_slug):
-
-    try:
-        cat = Category.objects.get(slug=category_name_slug)
-    except Category.DoesNotExist:
-                cat = None
-
-    if request.method == 'POST':
-        form = PageForm(request.POST)
-        if form.is_valid():
-            if cat:
-                page = form.save(commit=False)
-                page.category = cat
-                page.views = 0
-                page.save()
-                # probably better to use a redirect here.
-                return category(request, category_name_slug)
-        else:
-            print(form.errors)
-    else:
-        form = PageForm()
-
-    context_dict = {'form':form, 'category': cat}
-
-    return render(request, 'rango/add_page.html', context_dict)
 
 
 def register(request):
@@ -242,3 +226,4 @@ def user_logout(request):
 
     # Take the user back to the homepage.
     return HttpResponseRedirect('/rango/')
+
