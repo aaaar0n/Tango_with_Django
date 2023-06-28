@@ -12,5 +12,5 @@ urlpatterns = [
     path('login/', user_login, name='login'),
     path('restricted/', restricted, name='restricted'),
     path('logout/', user_logout, name='logout'),
-    path('search/', search_view, name='search')
+    path('search/', search_view, name='search'),
 ]

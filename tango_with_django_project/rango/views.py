@@ -14,12 +14,13 @@ from django.shortcuts import render, redirect
 from .models import Category, Page
 from django.shortcuts import render
 from django.conf import settings
+from rango.keys import BING_SEARCH_API_KEY
 import requests
 
 
 def search_view(request):
     query = request.GET.get('query')
-    api_key = settings.BING_SEARCH_API_KEY
+    api_key = BING_SEARCH_API_KEY
     endpoint = "https://api.bing.microsoft.com/v7.0/search"
     headers = {"Ocp-Apim-Subscription-Key": api_key}
     params = {"q": query, "count": 10}  # Customize parameters as needed
