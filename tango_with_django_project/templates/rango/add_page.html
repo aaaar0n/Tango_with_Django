@@ -1,9 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Page</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}{{ category_name }}{% endblock %}
+
+{% block body_block %}
     <h1>Add Page</h1>
 
     <form method="post">
@@ -20,5 +21,5 @@
 
         <input type="submit" value="Add Page">
     </form>
-</body>
-</html>
+    
+{% endblock %}

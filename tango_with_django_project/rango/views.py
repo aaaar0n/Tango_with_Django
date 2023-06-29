@@ -1,7 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from rango.models import Category, Page
-from rango.forms import PageForm
 from rango.forms import UserForm, UserProfileForm
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect, HttpResponse
@@ -16,7 +15,6 @@ from django.shortcuts import render
 from django.conf import settings
 from rango.keys import BING_SEARCH_API_KEY
 import requests
-from populate_rango import populate
 
 
 
@@ -36,15 +34,29 @@ def search_view(request):
     }
     return render(request, 'rango/search_results.html', context)
 
+def track_url(request):
+    page_id = None
+    url = '/rango/'
+    if request.method == 'GET':
+        if 'page_id' in request.GET:
+            page_id = request.GET['page_id']
+            try:
+                page = Page.objects.get(id=page_id)
+                page.views = page.views + 1
+                page.save()
+                url = page.url
+            except:
+                pass
 
+    return redirect(url)
 
 @login_required
 def index(request):
     request.session.set_test_cookie()
     # context = RequestContext(request)
     # context_dict = {'boldmessage': "I am bold font from the context"}
-    page_list = Page.objects.order_by('views')[:5]
-    category_list = Category.objects.order_by('-likes')[:5]
+    page_list = Page.objects.order_by('-views')[:5]
+    category_list = Category.objects.order_by('-views')[:5]
     context_dict = {'categories': category_list, 'page_list': page_list}
 
     visits = request.session.get('visits')
@@ -95,14 +107,14 @@ def category(request, category_name_url):
 
     try:
         category = Category.objects.get(name=category_name)
-        pages = Page.objects.filter(category=category)
+        pages = Page.objects.filter(category=category).order_by('-views')
         context_dict['pages'] = pages
         context_dict['category'] = category
 
     except Category.DoesNotExist:
         pass
     
-
+    
     category.increment_views()
     category.save()
 
@@ -125,7 +137,7 @@ def add_category(request):
 def add_page(request, category_name_url):
     # Retrieve the category object based on the category_name_url parameter
     category = get_object_or_404(Category, name=category_name_url)
-
+    
     if request.method == 'POST':
         # Retrieve the form data submitted by the user
         title = request.POST.get('title')

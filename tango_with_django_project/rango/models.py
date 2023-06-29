@@ -23,6 +23,9 @@ class Page(models.Model):
     url = models.URLField()
     views = models.IntegerField(default=0)
 
+    def increment_views(self):
+        self.views += 1
+
     def __unicode__(self):
         return self.title
     

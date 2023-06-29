@@ -16,7 +16,7 @@
             <ul>
                 {% for category in categories %}
                 <!-- Following line changed to add an HTML hyperlink -->
-                <li><a href="/rango/category/{{ category.name }}">{{ category.name }}</a> [{{ category.views }} views]</li>
+                <li><a href="/rango/category/{{ category.name }}">{{ category.name }}</a> [{{ category.views }} views] </li>
                 {% endfor %}
         
             </ul>
@@ -33,7 +33,8 @@
             <ul>
         {% for page in page_list %}
         <!-- Following line changed to add an HTML hyperlink -->
-        <li><a href="{{ page.url }}">{{ page.title }} </a></li>
+        <li><a href="{{ page.url }}">{{ page.title }} </a> [{{ page.views }} views]
+        </li> 
         {% endfor %}
         
         </ul>

@@ -13,4 +13,5 @@ urlpatterns = [
     path('restricted/', restricted, name='restricted'),
     path('logout/', user_logout, name='logout'),
     path('search/', search_view, name='search'),
+    path('goto/', track_url, name='goto'),
 ]
