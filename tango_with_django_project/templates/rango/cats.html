@@ -4,13 +4,6 @@
     {% for c in cats %}
         {% if c == act_cat %} <li  class="active" > {% else  %} <li>{% endif %}
             <a href="/rango/category/{{c.name}}" class="cat-color">{{ c.name }}</a></li>
-            {% for page in pages %}
-                <div class="page">
-                    <h3><a href="{{ page.url }}">{{ page.title }}</a></h3>
-                    <p>{{ page.content }}</p>
-                </div>
-            {% endfor %}
-
     {% endfor %}
 
 {% else %}

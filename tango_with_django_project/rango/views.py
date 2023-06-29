@@ -16,6 +16,8 @@ from django.shortcuts import render
 from django.conf import settings
 from rango.keys import BING_SEARCH_API_KEY
 import requests
+from populate_rango import populate
+
 
 
 def search_view(request):
@@ -44,8 +46,7 @@ def index(request):
     page_list = Page.objects.order_by('views')[:5]
     category_list = Category.objects.order_by('-likes')[:5]
     context_dict = {'categories': category_list, 'page_list': page_list}
-    for category in category_list:
-        category.url = category.name.replace(' ', '_')
+
     visits = request.session.get('visits')
     if not visits:
         visits = 1
@@ -87,8 +88,10 @@ def about(request):
 
 
 def category(request, category_name_url):
+    
     category_name = category_name_url.replace('_', ' ')
     context_dict = {'category_name': category_name}
+    
 
     try:
         category = Category.objects.get(name=category_name)
@@ -98,6 +101,10 @@ def category(request, category_name_url):
 
     except Category.DoesNotExist:
         pass
+    
+
+    category.increment_views()
+    category.save()
 
     return render(request, 'rango/category.html', context_dict)
 
@@ -113,6 +120,29 @@ def add_category(request):
     else:
         form = CategoryForm()
     return render(request, 'rango/add_category.html', {'form': form})
+
+
+def add_page(request, category_name_url):
+    # Retrieve the category object based on the category_name_url parameter
+    category = get_object_or_404(Category, name=category_name_url)
+
+    if request.method == 'POST':
+        # Retrieve the form data submitted by the user
+        title = request.POST.get('title')
+        url = request.POST.get('url')
+        views = int(request.POST.get('views', 0))
+
+        # Create a new page object
+        page = Page(title=title, url=url, views=views)
+        # Associate the page with the category
+        page.category = category
+        # Save the page object to the database
+        page.save()
+        # Perform any additional logic or redirection as needed
+        # ...
+
+    # Render the template for adding a page
+    return render(request, 'rango/add_page.html', {'category': category})
 
 
 def register(request):

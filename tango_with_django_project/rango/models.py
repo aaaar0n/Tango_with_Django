@@ -1,5 +1,4 @@
 from django.db import models
-from tango_with_django_project import settings
 from django.contrib.auth.models import User
 
 
@@ -7,6 +6,9 @@ class Category(models.Model):
     name = models.CharField(max_length=128, unique=True)
     likes = models.PositiveIntegerField(default=0)
     views = models.IntegerField(default=0)
+
+    def increment_views(self):
+        self.views += 1
 
     def __unicode__(self):
         return self.name

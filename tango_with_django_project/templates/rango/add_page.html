@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Page</title>
+</head>
+<body>
+    <h1>Add Page</h1>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required><br><br>
+
+        <label for="url">URL:</label>
+        <input type="text" id="url" name="url" required><br><br>
+
+        <label for="views">Views:</label>
+        <input type="number" id="views" name="views" value="0" required><br><br>
+
+        <input type="submit" value="Add Page">
+    </form>
+</body>
+</html>
