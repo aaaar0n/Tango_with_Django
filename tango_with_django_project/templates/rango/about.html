@@ -6,6 +6,8 @@
 
 {% block body_block %}
 
+<div id="msg">Hello</div>
+
 	<strong>{{ about }}</strong> <br />
 	
 	<strong>You have visited the site {{ visits }} time(s)</strong><br />
@@ -13,5 +15,15 @@
 		<img src="{% static 'about_new.jpg' %}" alt="Picture of chameleon" />
 	</body>
 	<br>
+
+	<button onClick="alert('You clicked the button using Javascript.');">
+		Click Me - I run Javascript
+ 	</button>
+
+	<button id="about-btn"> Click Me - I'm Javascript on Speed</button>
+
+	<p>This is a example</p>
+	
+	<p>This is another example</p>
 {% endblock %}
 

@@ -1,13 +1,28 @@
 
-{% if cats %}
+{% if cat_list %}
+
+    {% for c in cat_list %}
+        {% if c == act_cat %} <li  class="active" > {% else  %} <li>{% endif %}
+            <a href="/rango/category/{{c.name}}" class="cat-color">{{ c.name }}</a>
+            {% if user.is_authenticated %}
+            <a href="/rango/category/{{c.name}}/add_page/"><button class="btn btn-mini btn-info"">Add a Page</button></a>
+            {% endif %}
+        </li> 
+    {% endfor %}
+            </li>
+        
+            
+{% endif %}
+
+    {% if cats %}
 
     {% for c in cats %}
         {% if c == act_cat %} <li  class="active" > {% else  %} <li>{% endif %}
-            <a href="/rango/category/{{c.name}}" class="cat-color">{{ c.name }}</a></li>
+            <a href="/rango/category/{{c.name}}" class="cat-color">{{ c.name }}</a>
+        </li> 
     {% endfor %}
-
-{% else %}
-    <li> <strong >There are no category present.</strong></li>
+            </li>
+        
 
     </ul>
 {% endif %}

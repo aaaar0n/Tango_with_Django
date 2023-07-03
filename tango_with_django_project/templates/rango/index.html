@@ -16,7 +16,13 @@
             <ul>
                 {% for category in categories %}
                 <!-- Following line changed to add an HTML hyperlink -->
-                <li><a href="/rango/category/{{ category.name }}">{{ category.name }}</a> [{{ category.views }} views] </li>
+                <li><a href="/rango/category/{{ category.name }}">{{ category.name }}</a> 
+                {% if category.views > 1 %}
+                    ({{ category.views }} views)
+                {% elif category.views == 1 %}
+                    ({{ category.views }} view)
+                {% endif %}    
+                    
                 {% endfor %}
         
             </ul>
@@ -31,11 +37,16 @@
     </div>
 
             <ul>
-        {% for page in page_list %}
-        <!-- Following line changed to add an HTML hyperlink -->
-        <li><a href="{{ page.url }}">{{ page.title }} </a> [{{ page.views }} views]
-        </li> 
-        {% endfor %}
+            {% for page in page_list %}
+                <li>
+                <a href="{% url 'goto' %}?page_id={{page.id}}">{{ page.title }}</a>
+                    {% if page.views > 1 %}
+                            ({{ page.views }} views)
+                    {% elif page.views == 1 %}
+                            ({{ page.views }} view)
+                    {% endif %}
+                </li>
+            {% endfor %}
         
         </ul>
 {% endblock %}

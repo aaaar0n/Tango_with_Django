@@ -17,77 +17,20 @@ from rango.keys import BING_SEARCH_API_KEY
 import requests
 
 
-
-def search_view(request):
-    query = request.GET.get('query')
-    api_key = BING_SEARCH_API_KEY
-    endpoint = "https://api.bing.microsoft.com/v7.0/search"
-    headers = {"Ocp-Apim-Subscription-Key": api_key}
-    params = {"q": query, "count": 10}  # Customize parameters as needed
-
-    response = requests.get(endpoint, headers=headers, params=params)
-    results = response.json().get('webPages', {}).get('value', [])
-
-    context = {
-        'query': query,
-        'results': results,
-    }
-    return render(request, 'rango/search_results.html', context)
-
-def track_url(request):
-    page_id = None
-    url = '/rango/'
-    if request.method == 'GET':
-        if 'page_id' in request.GET:
-            page_id = request.GET['page_id']
-            try:
-                page = Page.objects.get(id=page_id)
-                page.views = page.views + 1
-                page.save()
-                url = page.url
-            except:
-                pass
-
-    return redirect(url)
-
 @login_required
 def index(request):
     request.session.set_test_cookie()
-    # context = RequestContext(request)
-    # context_dict = {'boldmessage': "I am bold font from the context"}
+    # Gets the top 5 categories and pages and saved it to context_dict
     page_list = Page.objects.order_by('-views')[:5]
     category_list = Category.objects.order_by('-views')[:5]
     context_dict = {'categories': category_list, 'page_list': page_list}
-
-    visits = request.session.get('visits')
-    if not visits:
-        visits = 1
-    reset_last_visit_time = False
-
-    last_visit = request.session.get('last_visit')
-    if last_visit:
-        last_visit_time = datetime.strptime(last_visit[:-7], "%Y-%m-%d %H:%M:%S")
-
-        if (datetime.now() - last_visit_time).seconds > 0:
-            # ...reassign the value of the cookie to +1 of what it was before...
-            visits = visits + 1
-            # ...and update the last visit cookie, too.
-            reset_last_visit_time = True
-    else:
-        # Cookie last_visit doesn't exist, so create it to the current date/time.
-        reset_last_visit_time = True
-
-    if reset_last_visit_time:
-        request.session['last_visit'] = str(datetime.now())
-        request.session['visits'] = visits
-    context_dict['visits'] = visits
 
     response = render(request,'rango/index.html', context_dict)
     return response
 
 
 def about(request):
-    
+    # Capture visit counts for about html
     if request.session.get('visits'):
         count = request.session.get('visits')
     else:
@@ -100,27 +43,28 @@ def about(request):
 
 
 def category(request, category_name_url):
-    
+
+    # replacing spaces with _ to avoid errors for url.
     category_name = category_name_url.replace('_', ' ')
     context_dict = {'category_name': category_name}
-    
 
     try:
+        # Saving the Category being accessed and extract all related pages
         category = Category.objects.get(name=category_name)
         pages = Page.objects.filter(category=category).order_by('-views')
         context_dict['pages'] = pages
         context_dict['category'] = category
+        # Increment the views value of the Category
+        category.increment_views()
+        category.save()
 
     except Category.DoesNotExist:
         pass
-    
-    
-    category.increment_views()
-    category.save()
 
     return render(request, 'rango/category.html', context_dict)
 
-@login_required
+
+@login_required 
 def add_category(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST)
@@ -134,6 +78,7 @@ def add_category(request):
     return render(request, 'rango/add_category.html', {'form': form})
 
 
+@login_required 
 def add_page(request, category_name_url):
     # Retrieve the category object based on the category_name_url parameter
     category = get_object_or_404(Category, name=category_name_url)
@@ -270,3 +215,96 @@ def user_logout(request):
     # Take the user back to the homepage.
     return HttpResponseRedirect('/rango/')
 
+
+def search_view(request):
+    query = request.GET.get('query')
+    api_key = BING_SEARCH_API_KEY
+    endpoint = "https://api.bing.microsoft.com/v7.0/search"
+    headers = {"Ocp-Apim-Subscription-Key": api_key}
+    params = {"q": query, "count": 10}  # Customize parameters as needed
+
+    response = requests.get(endpoint, headers=headers, params=params)
+    results = response.json().get('webPages', {}).get('value', [])
+
+    context = {
+        'query': query,
+        'results': results,
+    }
+    return render(request, 'rango/search_results.html', context)
+
+def track_url(request):
+    page_id = None
+    url = '/rango/'
+    if request.method == 'GET':
+        if 'page_id' in request.GET:
+            page_id = request.GET['page_id']
+            try:
+                page = Page.objects.get(id=page_id)
+                page.views = page.views + 1
+                page.save()
+                url = page.url
+            except:
+                pass
+
+    return redirect(url)
+
+@login_required
+def like_category(request):
+    cat_id = None
+    if request.method == 'GET':
+        cat_id = request.GET['category_id']
+
+    likes = 0
+    if cat_id:
+        cat = Category.objects.get(id=int(cat_id))
+        if cat:
+            likes = cat.likes + 1
+            cat.likes =  likes
+            cat.save()
+
+    return HttpResponse(likes)
+
+
+def get_category_list(max_results=0, starts_with=''):
+    cat_list = []
+    if starts_with:
+        cat_list = Category.objects.filter(name__istartswith=starts_with)
+
+    if max_results > 0:
+        if len(cat_list) > max_results:
+            cat_list = cat_list[:max_results]
+
+    return cat_list
+
+
+def suggest_category(request):
+    cat_list = []
+    starts_with = ''
+    if request.method == 'GET':
+        starts_with = request.GET['suggestion']
+
+    cat_list = get_category_list(8, starts_with)
+    
+    return render(request, 'rango/cats.html', {'cat_list': cat_list})
+
+
+@login_required
+def auto_add_page(request):
+    cat_id = None
+    url = None
+    title = None
+    context_dict = {}
+    if request.method == 'GET':
+        cat_id = request.GET['category_id']
+        url = request.GET['url']
+        title = request.GET['title']
+        if cat_id:
+            category = Category.objects.get(id=int(cat_id))
+            p = Page.objects.get_or_create(category=category, title=title, url=url)
+
+            pages = Page.objects.filter(category=category).order_by('-views')
+
+            # Adds our results list to the template context under name pages.
+            context_dict['pages'] = pages
+
+    return render(request, 'rango/page_list.html', context_dict)

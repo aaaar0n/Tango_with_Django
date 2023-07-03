@@ -1,5 +1,13 @@
 {% load rango_extras %}
 
+{% load static %} 
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static "js/jquery.js" %}"></script>
+<script src="{% static "js/rango-ajax.js" %}"></script>
+
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -18,24 +26,30 @@
       margin: 0; /* Add this line to remove default margin */
     }
 
+    .like-link {
+    color: white;
+    /* Add any other desired styles */
+    }
+
     .header {
       background-color: #343a40;
-      padding: 10px;
+      padding: 4px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: baseline;
     }
 
     .header-logo {
       color: #fff;
-      font-size: 28px;
+      font-size: 36px;
       font-weight: bold;
       text-decoration: none;
+      align-self: baseline
     }
 
     .header-functions {
       display: flex;
-      align-items: center;
+      align-items: baseline;
     }
     
     .header-functions a {
@@ -69,6 +83,37 @@
       font-size: 32px;
       margin-bottom: 30px;
     }
+    hr {
+      border: none;
+      border-top: 1px solid #000;
+      margin: 20px 0;
+    }
+
+    .header-search {
+      display: contents;
+      align-items: center;
+    }
+
+    .header-search .search-form {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .header-search input[type="text"] {
+      padding: 4px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .header-search button {
+      padding: 4px 8px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
   </style>
 </head>
 <body>
@@ -76,10 +121,12 @@
   <div class="header">
     <a href="{% url 'index' %}" class="header-logo">Rango - Tango with Django</a>
     <div class="header-functions">
+      <div class="header-search">
       <form action="{% url 'search' %}" method="GET" class="search-form">
         <input type="text" name="query" placeholder="Search">
         <button type="submit">Search</button>
       </form>
+      </div>
       {% if user.is_authenticated %}
         <li><a href="{% url 'restricted' %}">Restricted Page</a></li>
         <li><a href="{% url 'auth_logout' %}?next=/rango/">Logout</a></li>
@@ -98,7 +145,21 @@
       <div class="col-md-3 left-column">
         <h2>Categories</h2>
           <div class="left-column-content">
+            <ul class="nav nav-list">
+              <div class="header-search">
+              <li class="nav-header">Find a Category: </li>
+              <form>
+              <label></label>
+              <li><input  class="search-query span10" type="text" name="suggestion" value="" id="suggestion" /></li>
+              </form>
+              </div>
+              
+            </ul>
+            
+      <div id="cats">
+      </div>
           {% block side_block %}
+          <hr>
           {% get_category_list %}
           {% endblock %}
           </div>
